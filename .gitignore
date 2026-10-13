@@ -1,0 +1,14 @@
+# Game data is copyrighted and never committed
+# GAME: its file names or folders
+
+# Build outputs
+/build/
+/dist/
+
+# GAME: game data pulled from the MiSTer for tests on the PC
+/data/
+/build*.log
+
+# GAME: the engine and the games' SDK are plain clones until our forks exist (CLAUDE.md)
+/xash3d/
+/hlsdk/
