@@ -31,7 +31,8 @@ if [ "$TARGET" = mister ]; then
     # PGO=generate builds a binary that counts what runs on the MiSTer, PGO=use
     # (the default when build/pgo is there, PGO=off without) builds with the
     # counts. Partial training: what the runs did not reach is optimised as
-    # without a profile, not for size.
+    # without a profile, not for size, and so is a function whose code has
+    # changed since (-Wno-coverage-mismatch, else an error).
     if [ -z "$PGO" ] && [ -d build/pgo ]; then PGO=use; fi
     case "$PGO" in
     generate)
@@ -39,7 +40,7 @@ if [ "$TARGET" = mister ]; then
         LINK="$LINK -fprofile-generate=/tmp/xash3d-pgo" ;;
     use)
         [ -d build/pgo ] || { echo "build/pgo: run tools/pgo.sh first" >&2; exit 1; }
-        FLAGS="$FLAGS -fprofile-use=$ROOT/build/pgo -fprofile-partial-training -fprofile-correction -Wno-missing-profile" ;;
+        FLAGS="$FLAGS -fprofile-use=$ROOT/build/pgo -fprofile-partial-training -fprofile-correction -Wno-missing-profile -Wno-coverage-mismatch" ;;
     esac
 else
     FLAGS="-fno-pie"
