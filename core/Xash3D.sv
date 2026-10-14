@@ -76,6 +76,16 @@ localparam CONF_STR = {
 	// field, Off: at most one a field (both in mister_port.c in the engine)
 	"O[25],Resolution,320x200,320x240;",
 	"O[26],Lock to 30 FPS,Off,On;",
+	// Cheats (CheatsFrame() in mister_port.c): the switches hold while they
+	// are on, through saved games and level changes; Give All Weapons is the
+	// game's "impulse 101" (suit, armour, every weapon of the game, ammo)
+	"P2,Cheats;",
+	"P2-;",
+	"P2O[27],God Mode,Off,On;",
+	"P2O[28],No Clip,Off,On;",
+	"P2O[29],Invisible to Monsters,Off,On;",
+	"P2-;",
+	"P2T[30],Give All Weapons;",
 	"-;",
 	"O[19:16],Menu OK,MiSTer,A,B,X,Y,L,R,Select,Start;",
 	"O[23:20],Menu Back,MiSTer,A,B,X,Y,L,R,Select,Start;",
@@ -155,6 +165,17 @@ wire reset = RESET | buttons[1];
 // go to the analog output with "HDMI Only", and so does the OSD over them.
 // With direct_video the HDMI output feeds an analog screen: no "HDMI Only".
 wire       hdmi_only = status[0] & ~direct_video;
+
+// "Give All Weapons" is a trigger: Main sets its status bit and clears it at
+// once, and the game looks at the status once a frame. Held for 0.25s.
+reg [23:0] give_hold;
+wire       give_weapons = |give_hold;
+always @(posedge clk_sys) begin
+	if (status[30])
+		give_hold <= 24'd12_500_000;
+	else if (give_hold)
+		give_hold <= give_hold - 1'd1;
+end
 wire       vga31 = forced_scandoubler | hdmi_only;
 
 wire       clk_vid;
@@ -188,7 +209,7 @@ hybrid_host host
 	.joy_r_analog_0(joy_r_analog_0),
 	.joy_l_analog_1(joy_l_analog_1),
 	.joy_r_analog_1(joy_r_analog_1),
-	.osd_status(status[63:0]),
+	.osd_status({status[63:31], status[30] | give_weapons, status[29:0]}),
 	.ps2_key(ps2_key),
 	.ps2_mouse(ps2_mouse),
 	.ps2_mouse_ext(ps2_mouse_ext),

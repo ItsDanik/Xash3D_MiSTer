@@ -12,6 +12,7 @@ Disclaimer: AI is being used to speed up development of this project.
 
 - **danik_hybrid_cores**, the launcher that comes in the release zip (`Scripts/danik_hybrid_cores.sh`): run it **once** from the MiSTer's `Scripts` menu. It starts the game whenever the core is loaded, keeps running after a reboot, and serves all our hybrid cores. Every hybrid core brings the launcher along and the newest version is the one that runs, so it never has to be run again after an update. Without it the core only shows the MiSTer logo.
 - **Game data**, which is not included: TODO which copy of the game.
+- **A twin stick gamepad** (two analog sticks, like an Xbox or PlayStation controller): the left stick moves, the right stick looks around, and the d-pad is for weapons.
 
 ## Installation
 
@@ -33,7 +34,9 @@ The game's log is in `/media/fat/logs/Xash3D/xash3d.log`. TODO: where settings a
 | FPS Counter | shows the pictures per second in the top left corner |
 | HDMI Only | **Yes** if no CRT is connected: resolutions of 640x400 and more are then progressive instead of interlaced, and the analog output is switched off while one is shown, so that a 15kHz screen can never get such a signal. Nothing changes at lower resolutions. Not needed with `forced_scandoubler=1` (VGA monitor); not there with `direct_video=1` |
 | CRT Options | for a 15kHz screen: *Horizontal Size*, *Horizontal Pos* and *Vertical Pos* fit the picture to it. The pixels stay as they are; HDMI is not affected. Not there with `forced_scandoubler=1` |
-| TODO game options | |
+| Resolution | the game in **320x200** (default) or 320x240. The menus are always 640x480. Applies at once |
+| Lock to 30 FPS | **On**: a picture every second field, an even 30 per second where the game cannot keep up with 60. **Off** (default): up to 60 |
+| Cheats | *God Mode*, *No Clip* (fly through walls) and *Invisible to Monsters* stay on while they are on, through saved games and level changes, and are gone when turned off. *Give All Weapons* gives the suit, armour, every weapon of the game and ammo for them |
 | Menu OK, Menu Back | the gamepad button that confirms / goes back in the game's menus, whatever it does in the game. **MiSTer** (default) uses the OK/Back buttons of your MiSTer menu |
 
 ## Controls
@@ -48,16 +51,23 @@ The game's log is in `/media/fat/logs/Xash3D/xash3d.log`. TODO: where settings a
 
 | Button | Action |
 |---|---|
-| Left stick | TODO |
-| D-pad | TODO |
-| A (Xbox B / PlayStation Circle) | TODO |
-| B (Xbox A / PlayStation Cross) | TODO |
-| X (Xbox Y / PlayStation Triangle) | TODO |
-| Y (Xbox X / PlayStation Square) | TODO |
-| L (LB / L1) | TODO |
-| R (RB / R1) | TODO |
-| Select | TODO |
-| Start | Menu |
+| Left stick | move and strafe |
+| Right stick | look around |
+| Left stick click (L3) | walk / run, toggles |
+| Right stick click (R3) | flashlight on / off |
+| D-pad left / right | previous / next weapon |
+| D-pad up | last weapon used |
+| D-pad down | spray your logo |
+| A (Xbox B / PlayStation Circle) | jump, swim up |
+| B (Xbox A / PlayStation Cross) | duck, swim down |
+| X (Xbox Y / PlayStation Triangle) | use |
+| Y (Xbox X / PlayStation Square) | reload |
+| L (LB / L1), L2 | secondary attack |
+| R (RB / R1), R2 | primary attack |
+| Select | next weapon |
+| Start | menu |
+
+The stick clicks and the analog triggers are read straight from the controller, so they work without being assigned in MiSTer's button setup (the stick clicks with controllers that report them as standard gamepad buttons, as Xbox and PlayStation controllers do). The game's own *Controls* menu changes the buttons too, and keeps what you set there.
 
 Change the buttons in the OSD under *Define Xash3D buttons*. *Menu OK* and *Menu Back* there are only needed for a button without a game function; MiSTer doesn't let you assign a button twice, so to confirm with a button that also has a game function, pick it in the OSD's Menu OK/Menu Back options instead.
 
