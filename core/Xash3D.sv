@@ -73,10 +73,9 @@ localparam CONF_STR = {
 	// mixes them separately, then the game's own options from bit 24 up,
 	// followed by "-;". The first entry of an option is its default.
 	// The game's video mode; the menu is always 640x480. A frame every second
-	// field, Auto: while the renderer cannot keep up with every field (both in
-	// mister_port.c in the engine)
+	// field, Off: at most one a field (both in mister_port.c in the engine)
 	"O[25],Resolution,320x200,320x240;",
-	"O[27:26],Lock to 30 FPS,Off,On,Auto;",
+	"O[26],Lock to 30 FPS,Off,On;",
 	"-;",
 	"O[19:16],Menu OK,MiSTer,A,B,X,Y,L,R,Select,Start;",
 	"O[23:20],Menu Back,MiSTer,A,B,X,Y,L,R,Select,Start;",

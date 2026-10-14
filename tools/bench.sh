@@ -6,6 +6,9 @@
 # usage: MISTER=root@<address> tools/bench.sh <name> <seconds> <game folder> <engine arguments>
 #   e.g. tools/bench.sh c1a0 60 valve +map c1a0        -> build/bench/c1a0.log, c1a0.prof
 # Environment for the game: BENCH_ENV="MISTER_HYBRID_HEIGHT=240 ..."; BENCH_NOPROFILE=1: the frame log only
+# BENCH_KEYS='"<ms> <key> <hold ms>" ...': keys pressed through Main_MiSTer, <ms> after the game was
+#   started (Linux key codes, hybrid/tools/uinput_kbd.py)
+# BENCH_GRAB="<seconds> ...": frames saved at those times -> build/bench/<name>-<seconds>.ppm (tools/grab.py)
 set -e
 cd "$(dirname "$0")/.."
 HOST=${MISTER:?set MISTER=root@<address of the MiSTer>}
@@ -17,6 +20,7 @@ hybrid/docker.sh arm-linux-gnueabihf-strip -o build/bench/Xash3D.bench "$BIN"
 # the profile is read with the symbols of the binary that made it
 [ "$BIN" = "build/bench/$NAME.elf" ] || cp "$BIN" "build/bench/$NAME.elf"
 scp -q build/bench/Xash3D.bench "$HOST:$G/Xash3D.bench"
+scp -q hybrid/tools/uinput_kbd.py tools/grab.py "$HOST:/tmp/"
 cat > build/bench/run.sh <<END
 #!/bin/bash
 exec > /tmp/bench.out 2>&1
@@ -30,7 +34,13 @@ export MISTER_HYBRID_FPSLOG=1 $BENCH_ENV
 [ -n "$BENCH_NOPROFILE" ] || export MISTER_HYBRID_PROFILE=/tmp/bench.prof
 nice -n -20 taskset 0x03 ./Xash3D.bench -ref soft -windowed -nowriteconfig $* > /tmp/bench.log 2>&1 < /dev/null &
 P=\$!
-sleep $SECS
+[ -z '$BENCH_KEYS' ] || python3 /tmp/uinput_kbd.py $BENCH_KEYS &
+T=0
+for S in $BENCH_GRAB; do
+    sleep \$((S - T)); T=\$S
+    python3 /tmp/grab.py /tmp/bench-\$S.ppm
+done
+sleep \$(($SECS - T))
 kill \$P
 wait \$P
 rm -f /tmp/xash3d_nolaunch
@@ -42,4 +52,7 @@ sleep $((SECS + 16))
 until ssh "$HOST" 'grep -q done /tmp/bench.out' 2>/dev/null; do sleep 2; done
 scp -q "$HOST:/tmp/bench.log" "build/bench/$NAME.log"
 [ -n "$BENCH_NOPROFILE" ] || scp -q "$HOST:/tmp/bench.prof" "build/bench/$NAME.prof"
+for S in $BENCH_GRAB; do
+    scp -q "$HOST:/tmp/bench-$S.ppm" "build/bench/$NAME-$S.ppm" || true
+done
 grep -a "mister:.*frames" "build/bench/$NAME.log" | sed 's/^mister: //'

@@ -27,6 +27,20 @@ if [ "$TARGET" = mister ]; then
     # ARM instructions, not Thumb, as for the engine: a few percent faster
     CMAKE_CROSS="-DCMAKE_TOOLCHAIN_FILE=$ROOT/hybrid/toolchain/mister.cmake -DCMAKE_C_FLAGS=-marm -DCMAKE_CXX_FLAGS=-marm"
     CMAKE_LINK="-static-libstdc++ -static-libgcc"
+    # Profile guided optimisation of the engine (tools/pgo.sh, 5 to 8% faster):
+    # PGO=generate builds a binary that counts what runs on the MiSTer, PGO=use
+    # (the default when build/pgo is there, PGO=off without) builds with the
+    # counts. Partial training: what the runs did not reach is optimised as
+    # without a profile, not for size.
+    if [ -z "$PGO" ] && [ -d build/pgo ]; then PGO=use; fi
+    case "$PGO" in
+    generate)
+        FLAGS="$FLAGS -fprofile-generate=/tmp/xash3d-pgo -fprofile-update=atomic"
+        LINK="$LINK -fprofile-generate=/tmp/xash3d-pgo" ;;
+    use)
+        [ -d build/pgo ] || { echo "build/pgo: run tools/pgo.sh first" >&2; exit 1; }
+        FLAGS="$FLAGS -fprofile-use=$ROOT/build/pgo -fprofile-partial-training -fprofile-correction -Wno-missing-profile" ;;
+    esac
 else
     FLAGS="-fno-pie"
     LINK="-no-pie"
