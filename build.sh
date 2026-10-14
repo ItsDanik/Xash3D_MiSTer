@@ -18,13 +18,14 @@ hybrid/docker.sh hybrid/sdl2/build.sh "$TARGET" build/sdl
 # renderer and the menu are one binary without position independent code
 # (--static-linking, and MISTER_HYBRID keeps the loader for the games' libraries).
 if [ "$TARGET" = mister ]; then
-    FLAGS="-mcpu=cortex-a9 -mfpu=neon -mfloat-abi=hard -fno-pie"
+    FLAGS="-mcpu=cortex-a9 -mfpu=neon -mfloat-abi=hard -fno-pie -marm"
     # the compiler's runtime is linked in, the binary only needs the MiSTer's glibc
     LINK="-no-pie -static-libstdc++ -static-libgcc"
     X=arm-linux-gnueabihf
     TOOLS="CC=$X-gcc CXX=$X-g++ AR=$X-ar LD=$X-ld OBJCOPY=$X-objcopy STRIP=$X-strip"
     BITS=
-    CMAKE_CROSS="-DCMAKE_TOOLCHAIN_FILE=$ROOT/hybrid/toolchain/mister.cmake"
+    # ARM instructions, not Thumb, as for the engine: a few percent faster
+    CMAKE_CROSS="-DCMAKE_TOOLCHAIN_FILE=$ROOT/hybrid/toolchain/mister.cmake -DCMAKE_C_FLAGS=-marm -DCMAKE_CXX_FLAGS=-marm"
     CMAKE_LINK="-static-libstdc++ -static-libgcc"
 else
     FLAGS="-fno-pie"
@@ -35,11 +36,13 @@ else
     CMAKE_LINK=
 fi
 
+# waf does not look at the static SDL2: link again in case the hybrid library in it changed
+rm -f "$OUT/engine/engine/xash"
 hybrid/docker.sh sh -c "
   cd xash3d &&
   env $TOOLS CFLAGS='$FLAGS' CXXFLAGS='$FLAGS' LINKFLAGS='$LINK' \
       PKG_CONFIG_PATH=$PREFIX/lib/pkgconfig PKG_CONFIG_LIBDIR=$PREFIX/lib/pkgconfig \
-    ./waf configure -o ../$OUT/engine -T release $BITS --mister-hybrid \
+    ./waf configure -o ../$OUT/engine -T ${WAF_TYPE:-release} $BITS --mister-hybrid \
       --enable-soft --disable-gl --enable-stbtt --sdl-use-pkgconfig --disable-werror \
       --static-linking=filesystem_stdio,ref_soft,menu > ../$OUT-configure.log 2>&1 &&
   ./waf build" || { tail -30 "$OUT-configure.log"; exit 1; }
