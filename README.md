@@ -4,6 +4,14 @@ Half-Life on [MiSTer FPGA](https://github.com/MiSTer-devel/Main_MiSTer/wiki) as 
 
 TODO: one paragraph: which source port the game is and where it comes from. It runs on the MiSTer's ARM CPU. The Xash3D FPGA core provides native 15kHz video (CRT, VGA and HDMI) at 320x200, 44.1kHz audio and keyboard, mouse and gamepad input. The two halves talk through shared DDR3 memory.
 
+| | |
+|---|---|
+| ![The main menu, 640x480](docs/screenshots/title_menu_640x480.png) | ![Black Mesa Inbound: the tram ride, 320x200](docs/screenshots/black_mesa_inbound_tram_320x200.png) |
+| ![Anomalous Materials: the lobby, 320x200](docs/screenshots/anomalous_materials_lobby_320x200.png) | ![We've Got Hostiles, 320x200](docs/screenshots/weve_got_hostiles_320x200.png) |
+| ![Residue Processing, 320x200](docs/screenshots/residue_processing_320x200.png) | ![Xen, 320x200](docs/screenshots/xen_320x200.png) |
+
+Taken from the core's output on a MiSTer, as they are on a 4:3 screen.
+
 > **Beta.** Expect rough edges and please report problems in the issues.
 
 Disclaimer: AI is being used to speed up development of this project.
