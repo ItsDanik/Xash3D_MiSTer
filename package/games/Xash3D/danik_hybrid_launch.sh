@@ -1,16 +1,17 @@
 #!/bin/bash
 #
-# Xash3D (Half-Life) launcher. danik_hybrid_cores (Scripts/danik_hybrid_cores.sh)
-# runs it when the Xash3D core is loaded and stops it, with SIGTERM to the
-# process group, when another core is loaded.
+# Xash3D (Half-Life) launcher. danik_hybrid_ports (Scripts/danik_hybrid_ports.sh)
+# runs it when the Xash3D core is loaded (also with a game's set name, from
+# its menu entry: MISTER_HYBRID_SET, which the game reads) and stops it, with
+# SIGTERM to the process group, when another core is loaded.
 #
 # Laid out after the per-core handlers of MiSTer Frontier by MiSTer Organize
 # (https://github.com/MiSTerOrganize/MiSTer_Frontier, GPL-3.0), with thanks
 # for the inspiration. Licensed under the GPL-3.0.
 
 CORE="Xash3D"
-GAMEDIR="/media/fat/games/$CORE"
-LOGDIR="/media/fat/logs/$CORE"
+GAMEDIR="/media/fat/games/dnk/$CORE"
+LOGDIR="/media/fat/logs/dnk/$CORE"
 LOG="$LOGDIR/xash3d.log"
 
 cd "$GAMEDIR" || exit 1
@@ -61,10 +62,11 @@ GAME=
 # The game must not outlive us: on SIGTERM it saves its settings and quits
 trap '[ -n "$GAME" ] && kill "$GAME" 2>/dev/null && wait "$GAME"; savelog; exit 0' TERM INT
 while :; do
-    # GAME: its command line (where it finds data, settings and saved games):
-    # the games are the folders next to the binary (valve, bshift, gearbox)
-    # and each keeps its settings and saved games in its own. The engine
-    # sizes its window itself: 640x480 for the menu, 320x200 for the game.
+    # The games are the folders next to the binary (valve, gearbox, bshift)
+    # and each keeps its settings and saved games in its own; which one the
+    # engine runs is the menu entry's (MISTER_HYBRID_SET) or picked from a
+    # list (MiSTer_SelectGame()). The engine sizes its window itself: 640x480
+    # for the menu, 320x200 or 320x240 for the game.
     XASH3D_BASEDIR="$GAMEDIR" nice -n -20 taskset 0x03 ./Xash3D -ref soft -windowed >> "$RUNLOG" 2>&1 &
     GAME=$!
     wait "$GAME"
@@ -79,7 +81,14 @@ while :; do
 done
 GAME=
 
-# Back to the MiSTer menu, unless another core was loaded meanwhile
+# Unless another core was loaded meanwhile: a game that left with an error
+# (one that crashed: 128 + the signal) and put no message up says so on the
+# core's picture (./mh_message, host version 13), and a message stays there
+# until the player leaves the core. Else back to the MiSTer menu.
 if grep -q "^$CORE" /tmp/CORENAME 2>/dev/null; then
-    echo "load_core /media/fat/menu.rbf" > /dev/MiSTer_cmd
+    if [ $RC -ne 0 ] && ! ./mh_message --shown >> "$LOG" 2>&1; then
+        ./mh_message --error "The game stopped unexpectedly (exit code $RC).\nIts log: ${LOG#/media/fat/}" >> "$LOG" 2>&1
+        sleep 0.1
+    fi
+    ./mh_message --shown >> "$LOG" 2>&1 || echo "load_core /media/fat/menu.rbf" > /dev/MiSTer_cmd
 fi

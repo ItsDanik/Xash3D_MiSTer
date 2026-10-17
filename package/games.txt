@@ -1,0 +1,11 @@
+# The games of this core, a line each: <id>|<title> (hybrid/README.md,
+# "Several games in one core"). Each is a menu entry, _Other/dnk-<title>.mgl;
+# with several, its set name is Xash3D_<id> (short: 31 characters at most in
+# all). The zip has these lines as games/dnk/Xash3D/games.txt, from which the
+# database makes the launcher's catalogue (hybrid/launcher/distribution.py).
+# Each game is a folder of its own next to the engine, with our libraries for
+# it (build.sh): Half-Life valve, Opposing Force gearbox, Blue Shift bshift
+# (Games in xash3d/engine/platform/mister/mister_port.c, same ids).
+HL|Half-Life
+OF|HL: Opposing Force
+BS|HL: Blue Shift

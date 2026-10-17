@@ -92,3 +92,9 @@ for g in valve:master:hl bshift:bshift:hl gearbox:opfor:opfor; do
       cmake --install $OUT/hlsdk/$DIR >> $OUT-hlsdk-$DIR.log 2>&1" || { tail -30 "$OUT-hlsdk-$DIR.log"; exit 1; }
 done
 ls -la "$OUT/xash3d" "$OUT"/games/*/*/*.so
+
+# The launch script's messages on the core's picture (hybrid/tools/mh_message.c)
+if [ "$TARGET" = mister ]; then
+    hybrid/docker.sh arm-linux-gnueabihf-gcc -O2 -static -Ihybrid/hps -o build/mister/mh_message \
+        hybrid/tools/mh_message.c hybrid/hps/*.c -lpthread -lm
+fi
