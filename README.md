@@ -124,8 +124,8 @@ The toolchain image (Debian bullseye, glibc 2.31 to match the MiSTer) is built f
 |---|---|
 | `hybrid/` | submodule: [ItsDanik/Hybrid_MiSTer](https://github.com/ItsDanik/Hybrid_MiSTer), what all our hybrid ports share: the FPGA host module, the ARM side library, SDL2 drivers, the launcher (`danik_hybrid_ports.sh`), toolchain and conventions. See its README. |
 | `core/` | FPGA core, based on [Template_MiSTer](https://github.com/MiSTer-devel/Template_MiSTer): `Xash3D.sv` (OSD and button names) around `hybrid/rtl/hybrid_host.sv` |
-| `xash3d/` | the engine, Xash3D FWGS, branch `mister`, with the MiSTer changes |
-| `hlsdk/` | the games' code, hlsdk-portable (`build.sh` takes the branches of Opposing Force and Blue Shift from it) |
+| `xash3d/` | submodule: the engine, [our fork of Xash3D FWGS](https://github.com/ItsDanik/xash3d-fwgs), branch `mister`, with the MiSTer changes |
+| `hlsdk/` | submodule: the games' code, [our fork of hlsdk-portable](https://github.com/ItsDanik/hlsdk-portable), as it is (`build.sh` takes the branches of Opposing Force and Blue Shift from it) |
 | `package/` | files shipped in the release next to the binary (`danik_hybrid_launch.sh`, README), and `games.txt`: the games and their menu entries |
 | `tools/` | `test_on_mister.sh`, `deploy.sh`, and the benchmark and profile guided optimisation of the engine (`benchmark.sh`, `pgo.sh`; see `CLAUDE.md`) |
 | `releases/` | release packages |

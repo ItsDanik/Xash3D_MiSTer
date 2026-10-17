@@ -13,7 +13,7 @@
 
 <!-- Notes that are only true for this game go below. -->
 
-- Not on GitHub yet (Danik, 2026-10-14: local only): `xash3d/` is a plain clone of FWGS/xash3d-fwgs on a local branch `mister`, `hlsdk/` a clone of FWGS/hlsdk-portable, neither is a submodule. The forks, their `mister` branches and the core repository are still to be made; ask first.
+- On GitHub since 2026-10-17: the core is ItsDanik/Xash3D_MiSTer; `xash3d/` is the submodule ItsDanik/xash3d-fwgs (a fork of FWGS/xash3d-fwgs), branch `mister`; `hlsdk/` the submodule ItsDanik/hlsdk-portable (a fork of FWGS/hlsdk-portable), unchanged, branch `master`, and `build.sh` takes the expansions' branches `bshift` and `opfor` from it (the fork's, fixed until it is synced). In each, `origin` is the fork and `upstream` FWGS's.
 - The engine is built with waf, not CMake (`build.sh`). `--static-linking=filesystem_stdio,ref_soft,menu` puts the engine's own libraries into the one binary, which has no position independent code and takes the static SDL2; `--mister-hybrid` (`MISTER_HYBRID`) keeps `dlopen` for the games' libraries (`engine/platform/misc/lib_static.c`, `posix/lib_posix.c`). A library that is linked in needs an `exports.txt` beside its `wscript`.
 - The renderer is `ref/soft` (RGB565 through the window surface). No GPU, so `ref/gl` is not built.
 - Each game has a folder next to the binary (`valve`, `bshift`, `gearbox`) and its client and server libraries come from a branch of hlsdk-portable (`build.sh`: folder, branch, server library name). The server library is named after `gamedll` in the game's `liblist.gam`, which is `hl.dll` for Blue Shift as well.

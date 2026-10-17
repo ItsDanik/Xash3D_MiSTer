@@ -2,3 +2,11 @@
 	path = hybrid
 	url = https://github.com/ItsDanik/Hybrid_MiSTer.git
 	branch = main
+[submodule "xash3d"]
+	path = xash3d
+	url = https://github.com/ItsDanik/xash3d-fwgs.git
+	branch = mister
+[submodule "hlsdk"]
+	path = hlsdk
+	url = https://github.com/ItsDanik/hlsdk-portable.git
+	branch = master
