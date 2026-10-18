@@ -3,8 +3,8 @@
 # installing it (hybrid/CLAUDE.md, "test on the MiSTer"). It runs what
 # ./package.sh makes, with the port's own danik_hybrid_launch.sh, but:
 #   - the game's folder is /tmp/xash3d_test (gone after a reboot): the
-#     installed game's folder (games/dnk/Xash3D/, or games/Xash3D/ of the old
-#     layout) mirrored, its folders made anew and its files links to the
+#     installed game's folder (games/dnk/Xash3D/ on a USB drive or the SD
+#     card, or games/Xash3D/ of the old layout) mirrored, its folders made anew and its files links to the
 #     installed ones, but those under 1MB (settings, saved games; COPY below)
 #     copies, so that what the game writes stays in /tmp; and the package
 #     over it
@@ -12,6 +12,9 @@
 #     set name Xash3D_TEST: the OSD settings are config/Xash3D_TEST.CFG, at
 #     first a copy of the installed port's, and the game is told which game
 #     it is through MISTER_HYBRID_SET
+#   - the buttons are the core's defaults (its "jn"): the installed port's
+#     mappings are not copied, and one made in an earlier test is removed at
+#     every start (Danik, 2026-10-17: to test with the default mappings)
 #   - /tmp/xash3d_nolaunch keeps a launcher from starting the installed port
 # No launcher is involved and none is touched. "stop" removes all of it.
 # usage: MISTER=root@<address> tools/test_on_mister.sh <what>
@@ -22,6 +25,10 @@
 #   stop     stop the game, back to the menu, remove all of it
 # TEST_ENV="VAR=value ..." in the environment goes to the game as well, e.g.
 # MISTER_HYBRID_PACE=1 to measure the frame pacing (see the log).
+# TEST_USB=1 runs it with the game's data on the first USB drive, as a player
+# who put the folder there: in games/dnk/.Xash3D_test/ (games/dnk/.Xash3D_empty/
+# for nodata), the installed data copied there at the first such test; the
+# package stays in /tmp (USB drives are noexec). "stop" removes it too.
 set -e
 cd "$(dirname "$0")/.."
 NAME=Xash3D
@@ -30,10 +37,10 @@ HOST=${MISTER:?set MISTER=root@<address of the MiSTer>}
 USAGE="usage: tools/test_on_mister.sh <id of package/games.txt>|list|nodata|log|stop"
 WHAT=${1:?$USAGE}
 T=/tmp/${LOWER}_test
-# Which of the installed game's files under 1MB are copies, not links
+# GAME: which of the installed game's files under 1MB are copies, not links
 # (shell patterns of their paths in the game's folder; "*" is all of them).
-# Half-Life's 8000 small files (360MB) do not fit in /tmp: the files the
-# engine writes, its settings, saved games and spray logo.
+# All, unless they do not fit in /tmp (246MB, with the package): then the
+# files the game writes, its settings and saved games.
 COPY="*.cfg */save/* */logos/* *.hpk *.dt *.scr"
 
 remote() {
@@ -61,7 +68,11 @@ case $WHAT in
             rm -rf $T $T.empty $T.logs $T.mgl $T.runlog /tmp/${LOWER}_nolaunch /tmp/${LOWER}_test.lock \
                 /media/fat/_Other/.${LOWER}_test /media/fat/screenshots/${NAME}_TEST \
                 /media/fat/config/${NAME}_TEST.CFG /media/fat/config/${NAME}_TEST_volume.cfg \
-                /media/fat/config/inputs/${NAME}_TEST_*"
+                /media/fat/config/inputs/${NAME}_TEST_* \
+                /media/usb[0-7]/games/dnk/.${NAME}_test /media/usb[0-7]/games/dnk/.${NAME}_test.part \
+                /media/usb[0-7]/games/dnk/.${NAME}_empty
+            for d in /media/usb[0-7]/games/dnk; do [ -d \$d ] && rmdir \$d 2>/dev/null; done
+            true"
         echo "Stopped, and the test files are gone."
         exit 0 ;;
     list|nodata)
@@ -81,7 +92,7 @@ stop_game
 if ! remote "[ -d $T ]"; then
     echo "Mirroring the installed $NAME in $T on the MiSTer..."
     remote "mkdir -p $T $T.empty
-        for d in /media/fat/games/dnk/$NAME /media/fat/games/$NAME; do
+        for d in /media/usb[0-7]/games/dnk/$NAME /media/fat/games/dnk/$NAME /media/fat/games/$NAME; do
             [ -d \$d ] || continue
             cp -rs \$d/. $T/
             set -f
@@ -98,9 +109,6 @@ if ! remote "[ -d $T ]"; then
         cd /media/fat/config
         [ -f $NAME.CFG ] && [ ! -f ${NAME}_TEST.CFG ] && cp $NAME.CFG ${NAME}_TEST.CFG
         [ -f ${NAME}_volume.cfg ] && [ ! -f ${NAME}_TEST_volume.cfg ] && cp ${NAME}_volume.cfg ${NAME}_TEST_volume.cfg
-        for f in inputs/${NAME}_input_* inputs/${NAME}_advanced_input_*; do
-            [ -f \"\$f\" ] && cp \"\$f\" \"inputs/${NAME}_TEST\${f#inputs/$NAME}\"
-        done
         true"
 fi
 # the package, every time: over the copy, and alone in the folder without data
@@ -113,15 +121,39 @@ remote "printf '%s\n' '<mistergamedescription><rbf>_Other/.${LOWER}_test/dnk-$NA
 
 DIR=$T
 [ "$WHAT" = nodata ] && DIR=$T.empty
-# the port's launch script, for this folder (it must be the template's)
-remote "cd $DIR && sed -e 's|^GAMEDIR=.*|GAMEDIR=\"$DIR\"|' -e 's|^LOGDIR=.*|LOGDIR=\"$T.logs\"|' \
+DATA=$DIR
+if [ -n "$TEST_USB" ]; then
+    # the package alone in /tmp, the data on the first USB drive
+    DIR=$T.empty
+    USB=$(remote "awk '\$2 ~ /^\/media\/usb[0-7]\$/ { print \$2; exit }' /proc/mounts")
+    [ -n "$USB" ] || { echo "TEST_USB: no USB drive on the MiSTer" >&2; exit 1; }
+    if [ "$WHAT" = nodata ]; then
+        DATA=$USB/games/dnk/.${NAME}_empty
+        remote "mkdir -p $DATA"
+    else
+        DATA=$USB/games/dnk/.${NAME}_test
+        if ! remote "[ -d $DATA ]"; then
+            echo "Copying the installed $NAME's data to $DATA on the MiSTer..."
+            remote "mkdir -p $USB/games/dnk && rm -rf $DATA.part
+                for d in /media/usb[0-7]/games/dnk/$NAME /media/fat/games/dnk/$NAME /media/fat/games/$NAME; do
+                    [ -d \$d ] && { cp -r \$d $DATA.part && mv $DATA.part $DATA; break; }
+                done
+                mkdir -p $DATA"
+        fi
+    fi
+fi
+# the port's launch script, for these folders (it must be the template's)
+remote "cd $DIR && sed -e 's|^GAMEDIR=.*|GAMEDIR=\"$DIR\"|' -e 's|^DATADIR=.*|DATADIR=\"$DATA\"|' \
+        -e 's|^LOGDIR=.*|LOGDIR=\"$T.logs\"|' \
         -e 's|/tmp/$LOWER.lock|/tmp/${LOWER}_test.lock|' -e 's|^RUNLOG=.*|RUNLOG=$T.runlog|' \
         -e '/_nolaunch/d' danik_hybrid_launch.sh > .test_launch.sh
-    grep -q '^GAMEDIR=\"$DIR\"' .test_launch.sh && grep -q '^RUNLOG=$T.runlog' .test_launch.sh ||
-        { echo 'danik_hybrid_launch.sh is not like the template one: GAMEDIR= / RUNLOG= lines' >&2; exit 1; }
+    grep -q '^GAMEDIR=\"$DIR\"' .test_launch.sh && grep -q '^DATADIR=\"$DATA\"' .test_launch.sh &&
+        grep -q '^RUNLOG=$T.runlog' .test_launch.sh ||
+        { echo 'danik_hybrid_launch.sh is not like the template one: GAMEDIR= / DATADIR= / RUNLOG= lines' >&2; exit 1; }
+    rm -f /media/fat/config/inputs/${NAME}_TEST_*
     touch /tmp/${LOWER}_nolaunch
     echo 'load_core $T.mgl' > /dev/MiSTer_cmd
     sleep 4
     setsid env MISTER_HYBRID_SET=$SET $TEST_ENV bash .test_launch.sh > /dev/null 2>&1 < /dev/null &
     echo \$! > $T.pid"
-echo "Started ($WHAT, set name $SET). The OSD settings are the test's own (${NAME}_TEST)."
+echo "Started ($WHAT, set name $SET, data in $DATA). The OSD settings are the test's own (${NAME}_TEST)."
