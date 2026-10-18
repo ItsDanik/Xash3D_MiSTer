@@ -68,8 +68,10 @@ cp "$OUT/engine/engine/xash" "$OUT/xash3d"
 
 # GAME: the client and server libraries of each game, from the branches of
 # hlsdk-portable: <game folder>:<branch>:<server library>. The engine names the
-# server library after the "gamedll" of the game's liblist.gam, which is hl.dll
-# for Blue Shift too.
+# server library after the "gamedll_linux" of the game's liblist.gam, else its
+# "gamedll". Blue Shift's has two names: hl.dll alone (the copy it was tested
+# with), dlls/bshift.so as gamedll_linux (Steam's): its library is there as
+# both (a player found Steam's not starting, 2026-10-19).
 mkdir -p build/hlsdk-src
 for g in valve:master:hl bshift:bshift:hl gearbox:opfor:opfor; do
     DIR=${g%%:*}
@@ -91,6 +93,7 @@ for g in valve:master:hl bshift:bshift:hl gearbox:opfor:opfor; do
       cmake --build $OUT/hlsdk/$DIR -j\$(nproc) >> $OUT-hlsdk-$DIR.log 2>&1 &&
       cmake --install $OUT/hlsdk/$DIR >> $OUT-hlsdk-$DIR.log 2>&1" || { tail -30 "$OUT-hlsdk-$DIR.log"; exit 1; }
 done
+cp "$OUT/games/bshift/dlls/hl_armv7hf.so" "$OUT/games/bshift/dlls/bshift_armv7hf.so"
 ls -la "$OUT/xash3d" "$OUT"/games/*/*/*.so
 
 # The launch script's messages on the core's picture (hybrid/tools/mh_message.c)
