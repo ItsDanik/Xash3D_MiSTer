@@ -14,7 +14,7 @@ cd "$(dirname "$0")/.."
 HOST=${MISTER:?set MISTER=root@<address of the MiSTer>}
 NAME=$1; SECS=$2; GAME=$3; shift 3
 mkdir -p build/bench
-G=/media/fat/games/Xash3D
+G=/media/fat/games/dnk/Xash3D
 BIN=${BENCH_BIN:-build/mister/xash3d} # BENCH_BIN=build/bench/<name>.elf: the binary of an earlier run
 hybrid/docker.sh arm-linux-gnueabihf-strip -o build/bench/Xash3D.bench "$BIN"
 # the profile is read with the symbols of the binary that made it
@@ -27,7 +27,8 @@ exec > /tmp/bench.out 2>&1
 touch /tmp/xash3d_nolaunch
 for p in \$(ps | grep "[.]/Xash3D" | awk '{print \$1}'); do kill \$p; done
 sleep 3
-grep -q Xash3D /tmp/CORENAME || { echo "load_core \$(ls /media/fat/_Other/Xash3D_*.rbf | tail -1)" > /dev/MiSTer_cmd; sleep 8; }
+# the core of tools/test_on_mister.sh if it is there (the build's), else the installed one
+grep -q Xash3D /tmp/CORENAME || { echo "load_core \$(ls /media/fat/_Other/.xash3d_test/dnk-Xash3D_*.rbf /media/fat/_Other/dnk/dnk-Xash3D_*.rbf 2>/dev/null | head -1)" > /dev/MiSTer_cmd; sleep 8; }
 cd $G
 export MISTER_HYBRID_CORE=Xash3D HOME=$G XASH3D_BASEDIR=$G XASH3D_GAME=$GAME
 export MISTER_HYBRID_FPSLOG=1 $BENCH_ENV

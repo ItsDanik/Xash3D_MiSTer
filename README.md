@@ -55,10 +55,12 @@ Opposing Force and Blue Shift need Half-Life's folder `valve` as well. When a ga
 | Aspect ratio, Scale, Scandoubler Fx, Stereo Mix | as in other cores |
 | FPS Counter | shows the pictures per second in the top left corner |
 | HDMI Only | **Yes** if no CRT is connected: resolutions of 640x400 and more are then progressive instead of interlaced, and the analog output is switched off while one is shown, so that a 15kHz screen can never get such a signal. Here that is the menus (640x480); the game itself is not affected. Not needed with `forced_scandoubler=1` (VGA monitor); not there with `direct_video=1` |
-| CRT Options | for a 15kHz screen: *Horizontal Size*, *Horizontal Pos* and *Vertical Pos* fit the picture to it. The pixels stay as they are; HDMI is not affected. The size is for the game's picture: the core's own, with its messages, keeps its width. Not there with `forced_scandoubler=1`. *HUD (Top)* and *HUD (Bottom)*: at 320x240, how many lines the HUD keeps from the top and bottom edges of the screen, 0 to 24 (10 by default), so that a CRT's overscan does not hide it: the weapon list and the flashlight at the top, health, armour and ammo at the bottom. 0 is the very edge, for HDMI. Greyed out at 320x200 |
+| CRT Options | for a 15kHz screen: *Horizontal Size*, *Horizontal Pos* and *Vertical Pos* fit the picture to it. The pixels stay as they are; HDMI is not affected. The size is for the game's picture: the core's own, with its messages, keeps its width. Not there with `forced_scandoubler=1`. *HUD (Top)* and *HUD (Bottom)*: at 320x240, how many lines the HUD keeps from the top and bottom edges of the screen, 0 to 24 (0 by default, the very edge, for HDMI), so that a CRT's overscan does not hide it: the weapon list and the flashlight at the top, health, armour and ammo at the bottom. They move at once. Greyed out at 320x200 |
 | Resolution | the game in **320x200** (default) or 320x240. At 320x240 the view fills all 240 lines, from the top edge to the bottom one, and the HUD is drawn over it at the *HUD* margins. The menus are always 640x480. Applies at once |
 | Lock to 30 FPS | **On**: a picture every second field, an even 30 per second where the game cannot keep up with 60. **Off** (default): up to 60 |
+| Rumble | **On** (default) / Strong / Off: the gamepad shakes with your shots (each weapon its own way; the egon's beam and the gauss charging for as long as they last), the damage you take (the more, the stronger), explosions near you and when the screen shakes (earthquakes, the tram crash, the big monsters' stomps). *Strong* is twice as strong |
 | Cheats | *God Mode*, *No Clip* (fly through walls) and *Invisible to Monsters* stay on while they are on, through saved games and level changes, and are gone when turned off. *Give All Weapons* gives the suit, armour, every weapon of the game and ammo for them, once each time it is selected. *Long Jump Module* gives the long jump module (with the suit only, as in the game) |
+| Save Diagnostic Report | the last line: see [If something is wrong](#if-something-is-wrong) |
 
 ## Controls
 
@@ -144,6 +146,12 @@ The toolchain image (Debian bullseye, glibc 2.31 to match the MiSTer) is built f
   ```
 - `MISTER=root@<address> tools/test_on_mister.sh <id>` (`HL`, `OF`, `BS`) tries the build on a MiSTer next to what is installed there, without installing it: from `/tmp`, with the installed game's folder mirrored there (what the game writes stays in `/tmp`) and its own OSD settings. `list` and `nodata` for the core started by itself and without data, `log` for the game's log, `stop` to remove all of it again.
 - `touch /tmp/xash3d_nolaunch` on the MiSTer keeps the core loaded without starting the game, so you can start a development binary by hand (set `MISTER_HYBRID_CORE=Xash3D`, and `MISTER_HYBRID_SET` for a game's set name, e.g. `Xash3D_OF`). `/tmp/danik_hybrid_ports.log` shows what the launcher daemon did.
+
+## If something is wrong
+
+If the game stutters, the sound breaks up or something else is wrong, open the OSD while it happens and pick **Save Diagnostic Report**, the last line of the menu. The game keeps running; MiSTer's info box says the report is saved in `games/dnk/diagnostics/` on the SD card. Send that file (`Xash3D_<date>_<time>.zip`) with a few words on what went wrong.
+
+The report has the setup (versions, the video and audio lines of `MiSTer.ini`, the OSD settings), how the last 60 seconds went, the game's log and a screenshot. Nothing else: no network settings, addresses, saved games or lists of your files.
 
 ## Support
 

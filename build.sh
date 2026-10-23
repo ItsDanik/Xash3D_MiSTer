@@ -93,7 +93,9 @@ for g in valve:master:hl bshift:bshift:hl gearbox:opfor:opfor; do
       cmake --build $OUT/hlsdk/$DIR -j\$(nproc) >> $OUT-hlsdk-$DIR.log 2>&1 &&
       cmake --install $OUT/hlsdk/$DIR >> $OUT-hlsdk-$DIR.log 2>&1" || { tail -30 "$OUT-hlsdk-$DIR.log"; exit 1; }
 done
-cp "$OUT/games/bshift/dlls/hl_armv7hf.so" "$OUT/games/bshift/dlls/bshift_armv7hf.so"
+for f in "$OUT"/games/bshift/dlls/hl_*.so; do # hl_armv7hf.so, hl_amd64.so on the PC
+    cp "$f" "$OUT/games/bshift/dlls/bshift_${f##*/hl_}"
+done
 ls -la "$OUT/xash3d" "$OUT"/games/*/*/*.so
 
 # The launch script's messages on the core's picture (hybrid/tools/mh_message.c)

@@ -30,7 +30,7 @@ BENCH_GRAB=${BENCH_GRAB:+30}
 # the flashlight comes with the suit, which the player does not have yet in this map: cheat for it
 # (a file in the game's folder for the time of the run; bench.sh starts the game with -nowriteconfig)
 HOST=${MISTER:?set MISTER=root@<address of the MiSTer>}
-CFG=/media/fat/games/Xash3D/valve/mister_bench.cfg
+CFG=/media/fat/games/dnk/Xash3D/valve/mister_bench.cfg
 ssh "$HOST" "printf 'sv_cheats 1\nbind i \"impulse 101\"\nbind f \"impulse 100\"\n' > $CFG" 2>/dev/null
 BENCH_KEYS='"15000 23 100" "17000 33 100"' tools/bench.sh "$NAME-light" 40 valve +exec mister_bench.cfg +map c1a0 > /dev/null 2>&1
 ssh "$HOST" "rm -f $CFG" 2>/dev/null
