@@ -35,7 +35,7 @@ With `update_all` (Downloader 2.4 or newer, which update_all keeps up to date):
    | Half-Life | `valve` (with `liblist.gam`, `halflife.wad`, `maps`, `sound` and the rest) |
    | HL: Opposing Force | `gearbox`, next to `valve` |
    | HL: Blue Shift | `bshift`, next to `valve` |
-5. Load the game from the `Other` menu, e.g. **dnk-Half-Life**.
+5. Load the game from the `Other` menu, e.g. **dnk-Half-Life**, or from the `Hybrid Ports` folder if you moved the games there in the launcher.
 
 > [!NOTE]
 > The game data can go on a USB drive instead, into the same folder there (`/media/usb0/games/dnk/Xash3D/`, with `valve` and the expansions' folders in it): the game looks for it there first, and then keeps its settings and saved games there as well. Everything else stays on the SD card, the games' code in its `valve`, `gearbox` and `bshift` folders too.
