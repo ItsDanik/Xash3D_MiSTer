@@ -40,6 +40,9 @@ With `update_all` (Downloader 2.4 or newer, which update_all keeps up to date):
 > [!NOTE]
 > The game data can go on a USB drive instead, into the same folder there (`/media/usb0/games/dnk/Xash3D/`, with `valve` and the expansions' folders in it): the game looks for it there first, and then keeps its settings and saved games there as well. Everything else stays on the SD card, the games' code in its `valve`, `gearbox` and `bshift` folders too.
 
+> [!IMPORTANT]
+> **HDMI or VGA:** if you play on HDMI or on a VGA monitor rather than a 15kHz CRT, open the OSD and set *HDMI Only* to **Yes**. The game's menu is drawn at 640x480, which is interlaced for a CRT and shows combing on any other screen without it.
+
 Opposing Force and Blue Shift need Half-Life's folder `valve` as well. When a game's files are missing, the core says which files to copy where. Each game keeps its own OSD settings and button mappings. The core file itself (`_Other/dnk/dnk-Xash3D_*.rbf`, or from *Recent*) lists the games that are there to pick from; quitting a game then returns to the list. The game's log is in `/media/fat/logs/dnk/Xash3D/xash3d.log`. Each game keeps its settings (`config.cfg`) and saved games (`save/`) in its own folder, e.g. `/media/fat/games/dnk/Xash3D/valve/` (on the USB drive, if the game data is there).
 
 ## The launcher
@@ -67,12 +70,13 @@ Run it from the `Scripts` menu again whenever you want to change something. Its 
 |---|---|
 | Aspect ratio, Scale, Scandoubler Fx, Stereo Mix | as in other cores |
 | FPS Counter | shows the pictures per second in the top left corner |
-| HDMI Only | **Yes** if no CRT is connected: resolutions of 640x400 and more are then progressive instead of interlaced, and the analog output is switched off while one is shown, so that a 15kHz screen can never get such a signal. Here that is the menus (640x480); the game itself is not affected. Not needed with `forced_scandoubler=1` (VGA monitor); not there with `direct_video=1` |
-| CRT Options | **Horizontal Size**: the picture's width<br>**Horizontal Pos**: moves it left or right<br>**Vertical Pos**: moves it up or down<br>**HUD (Top)**: moves the weapon list and the flashlight 0 to 24 lines down from the top edge (default 0)<br>**HUD (Bottom)**: moves health, armour and ammo 0 to 24 lines up from the bottom edge (default 0)<br><br>For a 15kHz screen: fits the picture to it and keeps the HUD out of the overscan. The HUD lines work at 320x240 and move the HUD at once; greyed out at 320x200. HDMI is not affected; not there with `forced_scandoubler=1` |
+| HDMI Only | **Yes** if no CRT is connected: resolutions of 640x400 and more are then progressive instead of interlaced, and so is the core's own screen before the game, which moves at 60 pictures a second for a CRT and shows fine lines on HDMI without it, as do the menus at 640x480. The analog output is switched off while one is shown, so that a 15kHz screen can never get such a signal. Here that is the menus (640x480); the game itself is not affected. Not needed with `forced_scandoubler=1` (VGA monitor); not there with `direct_video=1` |
+| CRT Options | **Horizontal Size**: the picture's width<br>**Horizontal Pos**: moves it left or right<br>**Vertical Pos**: moves it up or down<br>**HUD (Top)**: moves the weapon list and the flashlight 0 to 24 lines down from the top edge (default 0)<br>**HUD (Bottom)**: moves health, armour and ammo 0 to 24 lines up from the bottom edge (default 0)<br>**Flicker Filter**: Light (default), Strong or Off: softens fine lines that blink while the picture is interlaced<br><br>For a 15kHz screen: fits the picture to it and keeps the HUD out of the overscan. The HUD lines work at 320x240 and move the HUD at once; greyed out at 320x200. HDMI is not affected but by the Flicker Filter; not there with `forced_scandoubler=1` |
 | Resolution | **320x200**: the game's view in 200 lines (default)<br>**320x240**: the view fills all 240 lines<br><br>At 320x240 the HUD is drawn over the view at the *HUD* margins. The menus are always 640x480. Applies at once |
 | Lock to 30 FPS | **Off**: up to 60 pictures a second (default)<br>**On**: a picture every second field, an even 30 a second where the game cannot keep up with 60 |
 | Rumble | **On**: the gamepad shakes with your shots, the damage you take, explosions near you and screen shakes (default)<br>**Strong**: twice as strong<br>**Off**: no rumble |
 | Cheats | **God Mode**: nothing hurts you<br>**No Clip**: fly through walls<br>**Invisible to Monsters**: monsters ignore you<br>**Give All Weapons**: the suit, armour, every weapon and ammo<br>**Long Jump Module**: the long jump module (with the suit only)<br><br>God Mode, No Clip and Invisible to Monsters stay on through saved games and level changes until they are turned off |
+| Reset | starts the game again from its beginning, as the USER button does |
 | Save Diagnostic Report | the last line: see [If something is wrong](#if-something-is-wrong) |
 
 ## Controls
